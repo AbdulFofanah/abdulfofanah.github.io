@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Save_Leaderboard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">Save_Leaderboard.java</span></div><h1>Save_Leaderboard.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.*;
+
+
+/**
+ * NEW
+ *
+ * &lt;code&gt;Save_Leaderboard&lt;/code&gt; handles persistence for the game's leaderboard.
+ * Scores are stored locally in a JSON file and loaded/saved using LibGDX utilities.
+ * The leaderboard is limited to the top 5 scores by default.
+ */
+<span class="nc" id="L18">public class Save_Leaderboard {</span>
+    private static final String Leaderboard_file = &quot;leaderboard.json&quot;;
+<span class="nc" id="L20">    private final Json leaderboardJSON = new Json();</span>
+    private static final int maxScore = 5;
+
+    /**
+     * &lt;code&gt;ScoreEntry&lt;/code&gt; represents a single leaderboard record consisting of
+     * a player's full name and a numeric score.
+     */
+    public static class ScoreEntry {
+        /** Player full name stored in the leaderboard. */
+        public String fullName;
+        /** Player score stored in the leaderboard. */
+        public int score;
+
+        /**
+         * Default constructor required for LibGDX JSON serialization.
+         */
+<span class="fc" id="L36">        public ScoreEntry() {} // required in order for JSON serialisation</span>
+
+        /**
+         * Construct a leaderboard entry with a name and score.
+         * @param fullName Full name of the player.
+         * @param score Score achieved by the player.
+         */
+<span class="fc" id="L43">        public ScoreEntry(String fullName, int score) {</span>
+<span class="fc" id="L44">            this.fullName = fullName;</span>
+<span class="fc" id="L45">            this.score = score;</span>
+<span class="fc" id="L46">        }</span>
+    }
+
+    /**
+     * Loads the leaderboard scores from the local JSON file.
+     * If the file does not exist or cannot be parsed, an empty list is returned.
+     * @return Array of loaded leaderboard scores
+     */
+    private Array&lt;ScoreEntry&gt; loadScores() {
+        try {
+<span class="nc" id="L56">            FileHandle scoreFile = Gdx.files.local(Leaderboard_file);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (scoreFile.exists()) {</span>
+<span class="nc" id="L58">                String LeaderboardJSONData = scoreFile.readString();</span>
+<span class="nc" id="L59">                return leaderboardJSON.fromJson(Array.class, ScoreEntry.class, LeaderboardJSONData);</span>
+            }
+<span class="nc" id="L61">        } catch (Exception error) {</span>
+            // Rather the file doesn't exist or there is an error code; return empty
+<span class="nc" id="L63">        }</span>
+<span class="nc" id="L64">        return new Array&lt;&gt;();</span>
+    }
+
+    /**
+     * Save leaderboard scores to the local JSON file. Existing file contents are overwritten.
+     * @param scores Array of scores to store.
+     */
+    private void saveScores(Array&lt;ScoreEntry&gt; scores) {
+<span class="nc" id="L72">        FileHandle scoreFile = Gdx.files.local(Leaderboard_file);</span>
+<span class="nc" id="L73">        scoreFile.writeString(leaderboardJSON.prettyPrint(scores), false);</span>
+<span class="nc" id="L74">    }</span>
+
+    /**
+     * Add a new score to the leaderboard, sort the leaderboard in descending order,
+     * and keep only the top {@value #maxScore} entries.
+     * @param fullName Full name of the player.
+     * @param score Score achieved by the player.
+     */
+    public void addScore(String fullName, int score) {
+<span class="nc" id="L83">        Array&lt;ScoreEntry&gt; finalScores = loadScores();</span>
+        // Add new entry, then sort descending by score
+<span class="nc" id="L85">        finalScores.add(new ScoreEntry(fullName, score));</span>
+<span class="nc" id="L86">        finalScores.sort((entryA, entryB) -&gt; Integer.compare(entryB.score, entryA.score));</span>
+        // Trim any extra entries beyond the maximum allowed.
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        while (finalScores.size &gt; maxScore) finalScores.removeIndex(finalScores.size - 1);</span>
+<span class="nc" id="L89">        saveScores(finalScores);</span>
+<span class="nc" id="L90">    }</span>
+
+    /**
+     * Return the current leaderboard scores (top 5).
+     * @return Array of high scores loaded from storage.
+     */
+    public Array&lt;ScoreEntry&gt; getHighScores() {
+<span class="nc" id="L97">        return loadScores();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

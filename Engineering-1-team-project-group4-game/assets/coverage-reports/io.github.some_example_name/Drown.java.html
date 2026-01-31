@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Drown.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">Drown.java</span></div><h1>Drown.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+
+/**
+ * NEW
+ *
+ * &lt;code&gt;Drown&lt;/code&gt; represents a water hazard that resets the player
+ * if they step into it. Uses the same rectangle overlap style
+ * as bus and ticket interactions.
+ */
+public class Drown {
+
+
+    /** Rectangle defining the water hazard area */
+    private Rectangle waterArea1;
+    private Rectangle waterArea2;
+
+    /** Position the player is reset to after drowning */
+    private Vector2 respawnPosition;
+
+    /**
+     * Constructor for &lt;code&gt;Drown&lt;/code&gt;, loading the water hazard
+     * from a specified object layer in a Tiled map.
+     *
+     * @param tiledMap Tiled map containing the water hazard object
+     * @param layerName Name of the object layer containing the water area
+     * @param respawnX X-coordinate to respawn the player at
+     * @param respawnY Y-coordinate to respawn the player at
+     */
+<span class="fc" id="L35">    public Drown(TiledMap tiledMap, String layerName, float respawnX, float respawnY) {</span>
+
+<span class="fc" id="L37">        this.respawnPosition = new Vector2(respawnX, respawnY);</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for (MapObject obj : tiledMap.getLayers().get(layerName).getObjects()) {</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">            if (obj instanceof RectangleMapObject) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                if (&quot;Water1&quot;.equalsIgnoreCase(obj.getName())) {</span>
+<span class="fc" id="L42">                    waterArea1 = ((RectangleMapObject) obj).getRectangle();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">                } else if (&quot;Water2&quot;.equalsIgnoreCase(obj.getName())) {</span>
+<span class="fc" id="L44">                    waterArea2 = ((RectangleMapObject) obj).getRectangle();</span>
+                }
+            }
+<span class="fc" id="L47">        }</span>
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * Check if the player has entered the water hazard and reset their position if so.
+     *
+     * @param player Player character to test for collision
+     * @return True if the player drowned and was respawned, false otherwise
+     */
+    public boolean update(Player player) {
+
+<span class="fc" id="L58">        Rectangle playerRect = new Rectangle(</span>
+<span class="fc" id="L59">            player.getPosition().x,</span>
+<span class="fc" id="L60">            player.getPosition().y,</span>
+            16,
+            16
+        );
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (playerRect.overlaps(waterArea1)) {</span>
+<span class="fc" id="L66">            player.getPosition().set(respawnPosition);</span>
+<span class="fc" id="L67">            return true; // drowned</span>
+        }
+
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (playerRect.overlaps(waterArea2)) {</span>
+<span class="nc" id="L71">            player.getPosition().set(respawnPosition);</span>
+<span class="nc" id="L72">            return true; // drowned</span>
+        }
+
+<span class="fc" id="L75">        return false;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

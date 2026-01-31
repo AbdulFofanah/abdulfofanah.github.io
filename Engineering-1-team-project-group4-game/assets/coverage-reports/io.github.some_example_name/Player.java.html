@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+
+/**
+ * EXTENDED
+ *
+ * &lt;code&gt; Player &lt;/code&gt; is the main character of the game, handling rendering and direction of the character sprite.
+ */
+public class Player
+{
+	/**
+     * EXTENDED
+     *
+	 * Enumeration of all the possible directions the player sprite can face.
+	 */
+<span class="fc" id="L19">	public enum Direction</span>
+	{
+		/** Face North */
+<span class="fc" id="L22">		UP,</span>
+
+		/** Face South */
+<span class="fc" id="L25">		DOWN,</span>
+		/** Face West */
+<span class="fc" id="L27">		LEFT,</span>
+		/** Face East */
+<span class="fc" id="L29">		RIGHT</span>
+	}
+
+	private Vector2 position;
+	private Texture frontTexture;
+	private Texture backTexture;
+	private Texture sideTexture;
+	private TextureRegion frontFrame;
+	private TextureRegion backFrame;
+	private TextureRegion sideFrame;
+    /** The current animation frame used when rendering the player sprite. */
+	public TextureRegion currentFrame;
+
+	/**
+     * UNCHANGED
+	 * Constructor for &lt;code&gt; Player &lt;/code&gt;, with a set of coordinates.
+	 * @param x Horizontal position for player to spawn in.
+	 * @param y Vertical position for player to spawn in.
+	 */
+	public Player(float x, float y)
+<span class="fc" id="L49">	{</span>
+<span class="fc" id="L50">		position = new Vector2(x, y);</span>
+
+<span class="fc" id="L52">		frontTexture = new Texture(&quot;Player-front.png&quot;);</span>
+<span class="fc" id="L53">		backTexture = new Texture(&quot;Player-back.png&quot;);</span>
+<span class="fc" id="L54">		sideTexture= new Texture (&quot;Player-side.png&quot;);</span>
+
+<span class="fc" id="L56">		frontFrame = new TextureRegion(frontTexture);</span>
+<span class="fc" id="L57">		backFrame = new TextureRegion(backTexture);</span>
+<span class="fc" id="L58">		sideFrame = new TextureRegion(sideTexture);</span>
+
+<span class="fc" id="L60">		currentFrame = frontFrame;</span>
+<span class="fc" id="L61">	}</span>
+
+	/**
+     * UNCHANGED
+	 * Called to set the direction of the Player sprite.
+	 * @param newDirection the direction the player should face.
+	 * @see Direction Direction.
+	 */
+	public void setDirection(Direction newDirection)
+	{
+<span class="pc bpc" id="L71" title="1 of 5 branches missed.">		switch (newDirection)</span>
+		{
+			case UP:
+<span class="fc" id="L74">				currentFrame = backFrame;</span>
+<span class="fc" id="L75">				break;</span>
+			case DOWN:
+<span class="fc" id="L77">				currentFrame = frontFrame;</span>
+<span class="fc" id="L78">				break;</span>
+			case LEFT:
+<span class="fc" id="L80">				currentFrame = sideFrame;</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">				if (currentFrame.isFlipX())</span>
+				{
+<span class="nc" id="L83">					currentFrame.flip(true, false);</span>
+				}
+				break;
+			case RIGHT:
+<span class="fc" id="L87">				currentFrame = sideFrame;</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				if (!currentFrame.isFlipX())</span>
+				{
+<span class="fc" id="L90">					currentFrame.flip(true, false);</span>
+				}
+				break;
+		}
+<span class="fc" id="L94">	}</span>
+
+	/**
+     * UNCHANGED
+	 * Convenience method to be called by the game screen's &lt;code&gt; render()
+	 * &lt;/code&gt; method, to draw the player using a SpriteBatch at the current
+	 * player coordinates.
+	 * @param batch SpriteBatch used by application to render all sprites.
+	 * @see com.badlogic.gdx.graphics.g2d.SpriteBatch SpriteBatch
+	 * @see com.badlogic.gdx.Screen#render Screen.render().
+	 */
+	public void render(SpriteBatch batch)
+	{
+<span class="nc" id="L107">		batch.draw(currentFrame, position.x, position.y);</span>
+<span class="nc" id="L108">	}</span>
+
+	/**
+     * UNCHANGED
+	 * Get the player's position in world.
+	 * @return The players x-by-y coordinates as a 2D vector.
+	 */
+	public Vector2 getPosition()
+	{
+<span class="fc" id="L117">		return position;</span>
+	}
+
+	/**
+     * UNCHANGED
+	 * Convenience method to be called by application to dispose of textures
+	 * of player's sprites when the application's dispose method is called.
+	 * @see com.badlogic.gdx.Screen#dispose Screen.dispose().
+	 */
+	public void dispose()
+	{
+<span class="nc" id="L128">		frontTexture.dispose();</span>
+<span class="nc" id="L129">		backTexture.dispose();</span>
+<span class="nc" id="L130">		sideTexture.dispose();</span>
+<span class="nc" id="L131">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

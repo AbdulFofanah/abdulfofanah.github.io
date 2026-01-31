@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Teleport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">Teleport.java</span></div><h1>Teleport.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+
+/**
+ * NEW
+ *
+ * &lt;code&gt; Teleport &lt;/code&gt; is an interactable game object, that acts as the
+ * hidden game event by allowing the player to teleport randomly using some
+ * science lab equipment
+ */
+
+public class Teleport {
+    private Texture texture;
+    private Vector2 position;
+    private Rectangle bounds;
+<span class="fc" id="L22">    private boolean searched = false;</span>
+<span class="fc" id="L23">    private boolean teleportHappened = false;</span>
+<span class="fc" id="L24">    private boolean showMessage = false;</span>
+<span class="fc" id="L25">    private float messageTimer = 0f;</span>
+    private BitmapFont font;
+    private GameScreen gameScreen;
+<span class="fc" id="L28">    private float countdownTimer = 0f;</span>
+
+    /**
+     * Constructor for &lt;code&gt; Teleport &lt;/code&gt;, with a set of coordinates.
+     * @param x Horizontal position for locker to spawn in.
+     * @param y Vertical position for locker to spawn in.
+     * @param gameScreen Screen instance controlling gameplay and collision checks.
+     */
+<span class="fc" id="L36">    public Teleport(float x, float y, GameScreen gameScreen) {</span>
+<span class="fc" id="L37">        texture = new Texture(&quot;locker.png&quot;);</span>
+<span class="fc" id="L38">        position = new Vector2(x, y);</span>
+<span class="fc" id="L39">        bounds = new Rectangle(x,y,texture.getWidth(), texture.getHeight());</span>
+<span class="fc" id="L40">        font = new BitmapFont();</span>
+<span class="fc" id="L41">        this.gameScreen = gameScreen;</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Update attributes of teleport
+     * Showing label if the label timer is still active.
+     * @param player Player character.
+     * @param delta Time elapsed since last frame.
+     */
+    public void update(Player player, float delta) {
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (!searched) {</span>
+<span class="fc" id="L52">            Rectangle playerRect = new Rectangle(</span>
+<span class="fc" id="L53">                player.getPosition().x,</span>
+<span class="fc" id="L54">                player.getPosition().y,</span>
+<span class="fc" id="L55">                player.currentFrame.getRegionWidth(),   // width of player sprite</span>
+<span class="fc" id="L56">                player.currentFrame.getRegionHeight()   // height of player sprite</span>
+            );
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            if (bounds.overlaps(playerRect)) {</span>
+<span class="fc" id="L59">                searched = true;</span>
+<span class="fc" id="L60">                showMessage = true;</span>
+<span class="fc" id="L61">                countdownTimer = 0f;</span>
+            }
+        }
+
+<span class="fc bfc" id="L65" title="All 4 branches covered.">        if (showMessage &amp;&amp; !teleportHappened) {</span>
+<span class="fc" id="L66">            countdownTimer += delta;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">            if (countdownTimer &gt;= 3.6f) {</span>
+<span class="nc" id="L68">                Vector2 newPos = getRandomSafePosition();</span>
+<span class="nc" id="L69">                player.getPosition().set(newPos);</span>
+<span class="nc" id="L70">                teleportHappened = true;</span>
+            }
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">            if (teleportHappened) {</span>
+<span class="nc" id="L73">                messageTimer += delta;</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                if (messageTimer &gt; 0.8f) {</span>
+<span class="nc" id="L75">                    showMessage = false;</span>
+                }
+            }
+        }
+<span class="fc" id="L79">    }</span>
+
+    private Vector2 getRandomSafePosition() {
+        // Specific map locations
+<span class="fc" id="L83">        Vector2[] safeSpots = new Vector2[] {</span>
+            new Vector2(560, 180),
+            new Vector2(300, 300),
+            new Vector2(150, 400),
+            new Vector2(450, 100),
+            new Vector2(360, 250),
+            new Vector2(50, 200)
+        };
+
+        // Random spot
+<span class="fc" id="L93">        int index = MathUtils.random(0, safeSpots.length - 1);</span>
+
+        // Return a new copy
+<span class="fc" id="L96">        return new Vector2(safeSpots[index]);</span>
+    }
+
+    /**
+     * Convenience method to be called by the game screen's &lt;code&gt; render()
+     * &lt;/code&gt; method, to draw the teleportation device, and it's label using a
+     * SpriteBatch at its coordinates.
+     * @param batch SpriteBatch used by application to render all sprites.
+     * @see com.badlogic.gdx.graphics.g2d.SpriteBatch SpriteBatch
+     * @see com.badlogic.gdx.Screen#render Screen.render().
+     */
+    public void render(SpriteBatch batch){
+<span class="nc" id="L108">        batch.draw(texture, position.x, position.y);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (showMessage) {</span>
+<span class="nc" id="L110">            String text = &quot;&quot;;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (!teleportHappened) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                if (countdownTimer &lt; 0.8f) text = &quot;3..&quot;;</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                else if (countdownTimer &lt; 1.6f) text = &quot;2..&quot;;</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                else if (countdownTimer &lt; 2.4f) text = &quot;1..&quot;;</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                else if (countdownTimer &lt; 3.6f) text = &quot;Teleporting...&quot;;</span>
+            } else {
+<span class="nc" id="L117">                text = &quot;Byeeeee....&quot;;</span>
+<span class="nc" id="L118">                showMessage = false;</span>
+            }
+
+<span class="nc" id="L121">            font.draw(batch, text, position.x, position.y + texture.getHeight() + 20);</span>
+        }
+<span class="nc" id="L123">    }</span>
+
+
+
+    /**
+     * Convenience method to be called by application to dispose of texture
+     * and font's teleport's sprites when the application's dispose method is called.
+     * @see com.badlogic.gdx.Screen#dispose Screen.dispose().
+     */
+    public void dispose(){
+<span class="nc" id="L133">        texture.dispose();</span>
+<span class="nc" id="L134">        font.dispose();</span>
+<span class="nc" id="L135">    }</span>
+
+    /**
+     * Return if the teleport has happened for updating the counter
+     * @return True/False value.
+     */
+    public boolean teleportHappened() {
+<span class="fc" id="L142">        return teleportHappened;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

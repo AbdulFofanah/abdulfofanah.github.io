@@ -1,0 +1,27 @@
+---
+layout: post
+title:  "Timeline Snapshots."
+categories: jekyll update
+---
+
+Screenshots as the timeline updates during the life cycle of the projects.
+
+#Timeline Updates
+
+## Update 1
+![Timline Update 1](/assets/Timeline 1.png)
+
+## Update 2
+![Timline Update 2](/assets/Timeline 2.png)
+
+## Update 3
+![Timline Update 3](/assets/Timeline 3.png)
+
+## Update 4
+![Timline Update 4](/assets/Timeline 4.png)
+
+## Update 5
+![Timline Update 5](/assets/Timeline 5.png)
+
+## Update 6
+![Timline Update 6](/assets/Timeline 6.png)

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Freeze_Dean.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">Freeze_Dean.java</span></div><h1>Freeze_Dean.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
+
+/**
+ * NEW
+ *
+ * &lt;code&gt; Freeze_Dean &lt;/code&gt; is a positive hidden event that allows the player to
+ * temporarily freeze all dean enemies for a fixed duration when interacting with
+ * the &quot;Materials&quot; area in the Tiled map.
+ *
+ * &lt;p&gt;The event is triggered when the player overlaps the with the area assigned to
+ * &quot;Materials&quot; in the specific object layer and presses &lt;code&gt;E&lt;/code&gt;. Once used,
+ * it cannot be used again.&lt;/p&gt;
+ */
+public class Freeze_Dean {
+    private Rectangle materialsArea;
+<span class="fc" id="L24">    private boolean discovered = false;</span>
+<span class="fc" id="L25">    private boolean usedMaterials = false;</span>
+<span class="fc" id="L26">    private boolean freezeActive = false;</span>
+<span class="fc" id="L27">    private float freezeTimer = 0f;</span>
+
+    /**
+     * Constructor for &lt;code&gt; Freeze_Dean &lt;/code&gt;, locating the &quot;Materials&quot; rectangle
+     * object from the given Tiled map layer.
+     *
+     * @param tiledMap The Tiled map containing the event object.
+     * @param layerName The Name of the object layer to search for &quot;Materials&quot;.
+     */
+<span class="fc" id="L36">    public Freeze_Dean(TiledMap tiledMap, String layerName) {</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        for (MapObject obj : tiledMap.getLayers().get(layerName).getObjects()) {</span>
+<span class="pc bpc" id="L38" title="2 of 4 branches missed.">            if (obj instanceof RectangleMapObject &amp;&amp; &quot;Materials&quot;.equalsIgnoreCase(obj.getName())) {</span>
+<span class="fc" id="L39">                materialsArea = ((RectangleMapObject) obj).getRectangle();</span>
+<span class="fc" id="L40">                break;</span>
+            }
+<span class="nc" id="L42">        }</span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * Update the freeze event state each frame. If the player is overlapping with the
+     * materials area, the event becomes discoverable and will activate when the
+     * player presses &lt;code&gt;E&lt;/code&gt;.
+     *
+     * &lt;p&gt;If the freeze is active, a countdown is applied and the deans are unfrozen
+     * automatically when the timer expires.&lt;/p&gt;
+     *
+     * @param player Player character used for overlap checks.
+     * @param gameScreen Game screen used to freeze/unfreeze all deans.
+     */
+    public void update(Player player, GameScreen gameScreen) {
+        // Check that the event was already used or missing from map
+<span class="fc bfc" id="L58" title="All 4 branches covered.">        if (materialsArea == null || usedMaterials) {</span>
+<span class="fc" id="L59">            return;</span>
+        }
+
+<span class="fc" id="L62">        Rectangle playerRect = new Rectangle(player.getPosition().x, player.getPosition().y, 16, 16);</span>
+
+        // Check's whether the materials have been discovered when player enters the area
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (playerRect.overlaps(materialsArea)) {</span>
+<span class="fc" id="L66">            discovered = true;</span>
+            // Activates the freeze
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {</span>
+<span class="fc" id="L69">                useFreeze(gameScreen);</span>
+            }
+        }
+
+        // Freeze countdown
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (freezeActive) {</span>
+<span class="fc" id="L75">            freezeTimer -= Gdx.graphics.getDeltaTime();</span>
+            // Unfreezes when the timer is finished
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">            if (freezeTimer &lt;= 0) {</span>
+<span class="nc" id="L78">                freezeActive = false;</span>
+<span class="nc" id="L79">                gameScreen.unfreezeDeans();</span>
+            }
+        }
+<span class="fc" id="L82">    }</span>
+
+    /**
+     * Activates the freeze by freezing all deans for 30 seconds and marking
+     * this event as used as it's a one time event.
+     *
+     * @param gameScreen The game screen used to freeze all deans.
+     */
+    private void useFreeze(GameScreen gameScreen) {
+<span class="fc" id="L91">        gameScreen.freezeAllDeans();</span>
+<span class="fc" id="L92">        freezeActive = true;</span>
+<span class="fc" id="L93">        freezeTimer = 30f;</span>
+<span class="fc" id="L94">        usedMaterials = true;</span>
+<span class="fc" id="L95">    }</span>
+
+    /**
+     * Renders the on-screen prompts and status text for the freeze event.
+     *
+     * @param batch The SpriteBatch used to render UI text.
+     * @param font The Font used to draw text to the screen.
+     */
+    public void render(SpriteBatch batch, BitmapFont font) {
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (materialsArea == null) return;</span>
+
+<span class="nc bnc" id="L106" title="All 4 branches missed.">        if (discovered &amp;&amp; !usedMaterials) {</span>
+<span class="nc" id="L107">            font.draw(batch, &quot;[E] Freeze Dean (30s)&quot;, materialsArea.x - 80, materialsArea.y + 40);</span>
+        }
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (freezeActive) {</span>
+<span class="nc" id="L110">            font.draw(batch, &quot;Deans Frozen for 30 seconds&quot;, materialsArea.x, materialsArea.y);</span>
+        }
+<span class="nc" id="L112">    }</span>
+
+    /**
+     * Returns whether the freeze event has been used already.
+     *
+     * @return True if the player has activated the freeze event, false otherwise.
+     */
+    public boolean isUsed() {
+<span class="fc" id="L120">        return usedMaterials;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

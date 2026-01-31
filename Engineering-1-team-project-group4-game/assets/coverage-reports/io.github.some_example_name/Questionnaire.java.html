@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Questionnaire.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">Questionnaire.java</span></div><h1>Questionnaire.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.g2d.*;
+
+
+/**
+ * NEW
+ *
+ * &lt;code&gt;Questionnaire&lt;/code&gt; it represent a quiz event area which has been loaded from the Tiled map.
+ * When the player enters the quiz area they can press &lt;code&gt;E&lt;/code&gt; to start the quiz.
+ * The player must answer using keys &lt;code&gt;A&lt;/code&gt;, &lt;code&gt;B&lt;/code&gt;, &lt;code&gt;C&lt;/code&gt;, or &lt;code&gt;D&lt;/code&gt;.
+ * A correct answer rewards the player by freezing all deans, while an incorrect answer
+ * spawns an additional dean as a penalty.
+ */
+public class Questionnaire {
+    private Rectangle quizArea;
+<span class="fc" id="L22">    private boolean discovered = false;</span>
+<span class="fc" id="L23">    private boolean answered = false;</span>
+<span class="fc" id="L24">    private boolean showQuiz = false;</span>
+<span class="fc" id="L25">    private boolean playerFrozen = false;</span>
+<span class="fc" id="L26">    private boolean questionSuccess = false;</span>
+<span class="fc" id="L27">    private String resultText = &quot;&quot;;</span>
+<span class="fc" id="L28">    private float resultTimer = 0f;</span>
+
+    /**
+     * Constructor for &lt;code&gt;Questionnaire&lt;/code&gt;, loading the questionnaire area rectangle
+     * from an object layer in a Tiled map.
+     * @param tiledMap The Tiled map containing the quiz object
+     * @param layerName The Name of the object layer containing the questionnaire area
+     */
+<span class="fc" id="L36">    public Questionnaire(TiledMap tiledMap, String layerName) {</span>
+        // Find the questionnaire object in the specified tiled map layer
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (MapObject obj : tiledMap.getLayers().get(layerName).getObjects()) {</span>
+<span class="pc bpc" id="L39" title="2 of 4 branches missed.">            if (obj instanceof RectangleMapObject &amp;&amp; &quot;Questionnaire&quot;.equalsIgnoreCase(obj.getName())) {</span>
+<span class="fc" id="L40">                quizArea = ((RectangleMapObject) obj).getRectangle();</span>
+<span class="fc" id="L41">                break;</span>
+            }
+<span class="nc" id="L43">        }</span>
+<span class="fc" id="L44">    }</span>
+
+    /**
+     * Update the quiz event each frame. Handles:
+     * &lt;ul&gt;
+     * &lt;li&gt;Detecting when the player enters the quiz area&lt;/li&gt;
+     * &lt;li&gt;Starting the quiz when &lt;code&gt;E&lt;/code&gt; is pressed&lt;/li&gt;
+     * &lt;li&gt;Processing answer keys &lt;code&gt;A-D&lt;/code&gt;&lt;/li&gt;
+     * &lt;li&gt;Managing the post-answer result message timer&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param player The player character used for collision detection
+     * @param gameScreen The game screen used to trigger rewards/penalties --&gt; freeze or spawn deans
+     */
+    public void update(Player player, GameScreen gameScreen) {
+<span class="fc bfc" id="L58" title="All 4 branches covered.">        if (quizArea == null || answered) return;</span>
+
+<span class="fc" id="L60">        Rectangle playerRect = new Rectangle(</span>
+<span class="fc" id="L61">            player.getPosition().x,</span>
+<span class="fc" id="L62">            player.getPosition().y,</span>
+            16,
+            16
+        );
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (playerRect.overlaps(quizArea)) {</span>
+<span class="fc" id="L68">            discovered = true;</span>
+
+            // Press E to begin the questionnaire, freeze the player while answering
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {</span>
+<span class="fc" id="L72">                showQuiz = true;</span>
+<span class="fc" id="L73">                playerFrozen = true;</span>
+            }
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            if (showQuiz) {</span>
+                // Incorrect options spawn an extra dean
+<span class="fc bfc" id="L78" title="All 2 branches covered.">                if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {</span>
+<span class="fc" id="L79">                    gameScreen.spawnSecondDean(); // FAIL</span>
+<span class="fc" id="L80">                    questionSuccess = false;</span>
+<span class="fc" id="L81">                    endQuestionnaire();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">                } if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {</span>
+<span class="fc" id="L83">                    gameScreen.spawnSecondDean(); // FAIL</span>
+<span class="fc" id="L84">                    questionSuccess = false;</span>
+<span class="fc" id="L85">                    endQuestionnaire();</span>
+                }
+<span class="fc bfc" id="L87" title="All 2 branches covered.">                if (Gdx.input.isKeyJustPressed(Input.Keys.C)) { // Correct option freezes all deans</span>
+<span class="fc" id="L88">                    gameScreen.freezeAllDeans();  // PASS</span>
+<span class="fc" id="L89">                    questionSuccess = true;</span>
+<span class="fc" id="L90">                    endQuestionnaire();</span>
+                }
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                else if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {</span>
+<span class="fc" id="L93">                    gameScreen.spawnSecondDean(); // FAIL</span>
+<span class="fc" id="L94">                    questionSuccess = false;</span>
+<span class="fc" id="L95">                    endQuestionnaire();</span>
+                }
+            }
+        }
+
+        // Once the question has been answered allow player movement again
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (answered) {</span>
+<span class="fc" id="L102">            playerFrozen = false;</span>
+        }
+
+        // decrement the result timer if its active and more than 0
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (resultTimer &gt; 0) {</span>
+<span class="fc" id="L107">            resultTimer -= Gdx.graphics.getDeltaTime();</span>
+        }
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * End the questionnaire and save the result. The questionnaire is answered
+     * the player is unfrozen, and sets a short result message.
+     */
+    private void endQuestionnaire() {
+<span class="fc" id="L116">        showQuiz = false;</span>
+<span class="fc" id="L117">        answered = true;</span>
+<span class="fc" id="L118">        playerFrozen = false;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        resultText = questionSuccess ? &quot;CORRECT, freezing Deans Permanently&quot; : &quot;INCORRECT, more Deans&quot;;</span>
+<span class="fc" id="L120">        resultTimer = 3f;</span>
+<span class="fc" id="L121">    }</span>
+
+    /**
+     * Return whether the player should be frozen.
+     * @return True if player movement should be blocked, false otherwise
+     */
+    public boolean isPlayerFrozen() {
+<span class="fc" id="L128">        return playerFrozen;</span>
+    }
+
+    /**
+     * Render the quiz prompt, questionnaire questions, and the result text.
+     * @param batch SpriteBatch used to draw text
+     * @param font Font used to render quiz UI text
+     */
+    public void render(SpriteBatch batch, BitmapFont font) {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (quizArea == null) return;</span>
+
+<span class="nc bnc" id="L139" title="All 4 branches missed.">        if (discovered &amp;&amp; !answered) {</span>
+<span class="nc" id="L140">            font.draw(batch, &quot;[E] Quiz?&quot;, quizArea.x , quizArea.y + 100);</span>
+        }
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        if (showQuiz) {</span>
+<span class="nc" id="L144">            font.draw(batch, &quot;Which of these cannot be used&quot;, quizArea.x , quizArea.y + 160);</span>
+<span class="nc" id="L145">            font.draw(batch, &quot;for a variable name in Java?&quot;, quizArea.x , quizArea.y + 140);</span>
+<span class="nc" id="L146">            font.draw(batch, &quot;Answer with your keyboard&quot;, quizArea.x , quizArea.y + 120);</span>
+<span class="nc" id="L147">            font.draw(batch, &quot;[A] Identifier &amp; Keyword&quot;, quizArea.x , quizArea.y + 40);</span>
+<span class="nc" id="L148">            font.draw(batch, &quot;[B] identifier&quot;, quizArea.x , quizArea.y);</span>
+<span class="nc" id="L149">            font.draw(batch, &quot;[C] Keyword,&quot;, quizArea.x , quizArea.y - 40);</span>
+<span class="nc" id="L150">            font.draw(batch, &quot;[D] None of these&quot;, quizArea.x , quizArea.y - 80);</span>
+        }
+
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (resultTimer &gt; 0) {</span>
+<span class="nc" id="L154">            font.draw(batch, resultText, quizArea.x , quizArea.y + 160);</span>
+        }
+<span class="nc" id="L156">    }</span>
+
+    /**
+     * Return whether the questionnaire has been answered.
+     * @return True if the questionnaire is complete, false otherwise
+     */
+    public boolean isAnswered() {
+<span class="fc" id="L163">        return answered;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

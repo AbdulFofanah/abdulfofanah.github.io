@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameTimer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">GameTimer.java</span></div><h1>GameTimer.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.audio.Sound;
+
+/**
+ * EXTENDED
+ *
+ * &lt;code&gt;GameTimer&lt;/code&gt; implements a timer that ticks down during gameplay, and emits
+ * a sound when it reaches 0.
+ * It contains a sprite that can be rendered to display to the user graphically
+ * how much time is left.
+ *
+ * @since 2025-11-04 19:28:26
+ */
+public class GameTimer {
+
+	private Float timeLeft;
+	private Label timerLabel;
+	private Sound timerDingSFX;
+
+	/**
+     * UNCHANGED
+	 * Constructor for &lt;code&gt;GameTimer&lt;/code&gt;, defaulting to 300 seconds.
+	 * @param skin Skin containing style for the timer label.
+	 * @param table Table displaying timer widget.
+	 */
+<span class="nc" id="L31">	public GameTimer(Skin skin, Table table) {</span>
+<span class="nc" id="L32">		this.timeLeft = 300f;</span>
+<span class="nc" id="L33">		this.timerDingSFX = Gdx.audio.newSound(</span>
+<span class="nc" id="L34">			Gdx.files.internal(&quot;ding.wav&quot;)</span>
+		);
+<span class="nc" id="L36">		instantiateLabel(skin,table);</span>
+<span class="nc" id="L37">	}</span>
+
+	/**
+     * UNCHANGED
+	 * Constructor for &lt;code&gt;GameTimer&lt;/code&gt; for a given amount of seconds.
+	 * @param skin Skin containing style for the timer label.
+	 * @param table Table displaying timer widget.
+	 * @param seconds Time in seconds to be counted by timer.
+	 * @see com.badlogic.gdx.scenes.scene2d.ui.Skin Skin
+	 */
+<span class="nc" id="L47">	public GameTimer(Skin skin, Table table, float seconds) {</span>
+<span class="nc" id="L48">		this.timeLeft = seconds;</span>
+
+<span class="nc" id="L50">		this.timerDingSFX = Gdx.audio.newSound(</span>
+<span class="nc" id="L51">			Gdx.files.internal(&quot;ding.wav&quot;)</span>
+		);
+<span class="nc" id="L53">		instantiateLabel(skin,table);</span>
+<span class="nc" id="L54">	}</span>
+
+
+	/**
+     * UNCHANGED
+ 	 * Return the time in formatted in mm:ss for time left.
+ 	 * @return String formatted in mm:ss of time left.
+	 */
+	@Override
+	public String toString() {
+<span class="nc" id="L64">		long minutes = (long) Math.floor(this.timeLeft / 60) ;</span>
+<span class="nc" id="L65">		long seconds = (long) Math.floor(this.timeLeft) - (minutes * 60);</span>
+<span class="nc" id="L66">		return String.format(&quot;%02d : %02d&quot;, minutes, seconds);</span>
+	}
+
+	/**
+     * EXTENDED JAVADOC
+	 * Decrements timer by given value, or to 0 if the new value will be a
+	 * negative number.
+	 * @param decrementation Value to reduce the timer by, in seconds, ideally sourced from {@link com.badlogic.gdx.Graphics#getRawDeltaTime()}.
+	 */
+	public void decrementTimer(float decrementation) {
+<span class="nc" id="L76">		this.timeLeft = Math.max(0, timeLeft - decrementation);</span>
+<span class="nc" id="L77">		this.timerLabel.setText(this.toString());</span>
+<span class="nc" id="L78">	}</span>
+
+    /**
+     * NEW
+     *
+     * Allows the timer to be decreased or increased by any amount
+     * @param amount Value to add or remove from timer
+     */
+    public void addTime(float amount) {
+<span class="nc" id="L87">        this.timeLeft = Math.max(0, this.timeLeft + amount);</span>
+<span class="nc" id="L88">        this.timerLabel.setText(this.toString());</span>
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (this.timeLeft == 0) {</span>
+<span class="nc" id="L91">            onTimeUp();</span>
+        }
+<span class="nc" id="L93">    }</span>
+
+	/**
+     * UNCHANGED
+	 * Called when the time reaches 0, to play finishing sound and
+	 * change to game over screen.
+	 */
+	public void onTimeUp() {
+<span class="nc" id="L101">		this.timerDingSFX.play(3f);</span>
+<span class="nc" id="L102">	}</span>
+
+	/**
+     * UNCHANGED
+	 * Get time left in seconds in timer.
+	 * @return Time left in seconds.
+	 */
+	public float getTimeLeft() {
+<span class="nc" id="L110">		return this.timeLeft;</span>
+	}
+
+	/**
+     * UNCHANGED
+ 	 * Get the graphical label that displays the amount of time left.
+	 * @return Label component.
+	 */
+	public Label getTimerLabel() {
+<span class="nc" id="L119">		return this.timerLabel;</span>
+	}
+
+	/**
+     * UNCHANGED
+ 	 * Helper method to create and add the label to given table.
+ 	 * @param skin Skin containing style for the timer label.
+	 * @param table Table displaying timer widget.
+	 */
+	private void instantiateLabel(Skin skin, Table table) {
+<span class="nc" id="L129">		this.timerLabel = new Label(&quot;&quot;, skin);</span>
+<span class="nc" id="L130">		table.add(this.timerLabel).row();</span>
+<span class="nc" id="L131">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

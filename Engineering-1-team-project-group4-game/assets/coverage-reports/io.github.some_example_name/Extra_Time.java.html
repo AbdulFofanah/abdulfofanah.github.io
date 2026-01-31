@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Extra_Time.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">Extra_Time.java</span></div><h1>Extra_Time.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+
+/**
+ * NEW
+ *
+ * &lt;code&gt;Extra_Time&lt;/code&gt; is an interactable game object that represents
+ * a positive event. When the player collides with this NPC, additional
+ * time is permanently added to the game timer.
+ */
+public class Extra_Time {
+
+
+    private Texture texture; // The texture used to render the NPC
+    private Vector2 position; // The map position of the NPC
+
+    private Rectangle bounds; // The collision bounds
+    /** The tracking of NPC interaction */
+<span class="fc" id="L24">    private boolean searched = false;</span>
+    /** Determines whether the message should currently be shown */
+<span class="fc" id="L26">    private boolean showMessage = false;</span>
+    /** Tracks whether the time bonus has been granted */
+<span class="fc" id="L28">    private boolean gainedTime = false;</span>
+    /** The timer which is used to control message display duration */
+<span class="fc" id="L30">    private float messageTimer = 0f;</span>
+    /** The duration (in seconds) that the message remains visible */
+<span class="fc" id="L32">    private final float messageDuration = 5f;</span>
+    /** The amount of time (in seconds) that is added to the game timer */
+<span class="fc" id="L34">    private final float timeIncreaseAmount = 30; // +30 seconds</span>
+    private BitmapFont font; // The Font used to render on-screen messages
+
+    /**
+     * Constructor for &lt;code&gt;Extra_Time&lt;/code&gt;, spawning the NPC at the given
+     * world coordinates.
+     *
+     * @param x Horizontal position to spawn the NPC
+     * @param y Vertical position to spawn the NPC
+     */
+<span class="fc" id="L44">    public Extra_Time(float x, float y) {</span>
+<span class="fc" id="L45">        texture = new Texture(&quot;NPC.png&quot;);</span>
+
+        // Move it slightly right and up from the base coordinates
+<span class="fc" id="L48">        position = new Vector2(x + 20, y + 10);</span>
+
+<span class="fc" id="L50">        bounds = new Rectangle(</span>
+            position.x,
+            position.y,
+<span class="fc" id="L53">            texture.getWidth(),</span>
+<span class="fc" id="L54">            texture.getHeight()</span>
+        );
+
+<span class="fc" id="L57">        font = new BitmapFont();</span>
+<span class="fc" id="L58">    }</span>
+
+    /**
+     * Update attributes of NPC, and increment timer on time increase and
+     * label timer, showing label if the label timer is still active.
+     *
+     * @param player The player character interacting with the NPC
+     * @param timer GameTimer is used to add additional time
+     * @param delta Represents the time elapsed since the last frame
+     */
+    public void update(Player player, GameTimer timer, float delta) {
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (!searched) {</span>
+<span class="fc" id="L70">            Rectangle playerRect = new Rectangle(</span>
+<span class="fc" id="L71">                player.getPosition().x,</span>
+<span class="fc" id="L72">                player.getPosition().y,</span>
+<span class="fc" id="L73">                player.currentFrame.getRegionWidth(),</span>
+<span class="fc" id="L74">                player.currentFrame.getRegionHeight()</span>
+            );
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">            if (bounds.overlaps(playerRect)) {</span>
+<span class="fc" id="L78">                searched = true;</span>
+<span class="fc" id="L79">                showMessage = true;</span>
+<span class="fc" id="L80">                gainedTime = true;</span>
+<span class="fc" id="L81">                messageTimer = 0f;</span>
+<span class="fc" id="L82">                timer.addTime(timeIncreaseAmount);</span>
+            }
+        }
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (showMessage) {</span>
+<span class="fc" id="L87">            messageTimer += delta;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (messageTimer &gt; messageDuration) {</span>
+<span class="fc" id="L89">                showMessage = false;</span>
+            }
+        }
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * Render the NPC and any associated on-screen message.
+     *
+     * @param batch SpriteBatch used to render the NPC and text
+     */
+    public void render(SpriteBatch batch) {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (!searched) {</span>
+<span class="nc" id="L101">            batch.draw(texture, position.x, position.y);</span>
+        }
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (showMessage) {</span>
+<span class="nc" id="L105">            font.draw(</span>
+                batch,
+                &quot;You found extra time!\n+30 seconds&quot;,
+<span class="nc" id="L108">                position.x - 40, position.y + texture.getHeight() + 20</span>
+            );
+        }
+<span class="nc" id="L111">    }</span>
+
+    /**
+     * Dispose of textures and fonts associated with this NPC.
+     */
+    public void dispose() {
+<span class="nc" id="L117">        texture.dispose();</span>
+<span class="nc" id="L118">        font.dispose();</span>
+<span class="nc" id="L119">    }</span>
+
+    /**
+     * Return if the extra time NPC has been hit for updating the counter
+     *
+     * @return True if extra time was awarded, false otherwise
+     */
+    public boolean gainedTime(){
+<span class="fc" id="L127">        return gainedTime;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

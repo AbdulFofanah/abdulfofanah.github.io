@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NPC.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.some_example_name</a> &gt; <span class="el_source">NPC.java</span></div><h1>NPC.java</h1><pre class="source lang-java linenums">package io.github.some_example_name;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import static com.badlogic.gdx.math.MathUtils.random;
+
+/**
+ * EXTENDED
+ *
+ * &lt;code&gt; NPC &lt;/code&gt; represents NPCs that can provide items or dialog to
+ * the player when interacted with.
+ */
+public class NPC {
+	private Texture texture;
+	private Vector2 position;
+	private Rectangle bounds;
+	private BitmapFont font;
+<span class="fc" id="L23">	private boolean showMessage = false;</span>
+<span class="fc" id="L24">    private String[] lines = {&quot;Hey friend!\nDon't forget your bus ticket...\nyou always manage to drop it in a bush&quot;,</span>
+                            &quot;I wonder what would happen \nif u searched the material in the clearing...&quot;,
+                            &quot;Have you visited my twin??&quot;,
+                            &quot;How are you in 2 places at once!!!\nMaybe check the deans office?&quot;};
+    private String currentLine;
+	/**
+     * UNCHANGED
+	 * Constructor for &lt;code&gt; NPC &lt;/code&gt;, with a set of coordinates.
+	 * @param x Horizontal position for NPC to spawn in.
+	 * @param y Vertical position for NPC to spawn in.
+	 */
+<span class="fc" id="L35">	public NPC(float x, float y) {</span>
+<span class="fc" id="L36">		texture = new Texture(&quot;NPC.png&quot;);</span>
+<span class="fc" id="L37">		position = new Vector2(x, y);</span>
+<span class="fc" id="L38">		bounds = new Rectangle(x,y,texture.getWidth(), texture.getHeight());</span>
+<span class="fc" id="L39">		font = new BitmapFont();</span>
+<span class="fc" id="L40">	}</span>
+
+	/**
+     * EXTENDED
+     *
+	 * Update if the dialog is shown to player depending on player position
+	 * and if the E key has been pressed recently.
+	 * @param player Player object.
+	 */
+    public void update(Player player) {
+
+<span class="fc" id="L51">        bounds.setPosition(position.x, position.y);</span>
+
+<span class="fc" id="L53">        if (</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">            isPlayerInRange(player) &amp;&amp;</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">                isInteractKeyPressed()</span>
+        ) {
+<span class="fc" id="L57">            showMessage = true;</span>
+<span class="fc" id="L58">            currentLine = chooseDialogLine();</span>
+        }
+
+<span class="fc bfc" id="L61" title="All 4 branches covered.">        if (showMessage &amp;&amp; isPlayerOutOfRange(player)) {</span>
+<span class="fc" id="L62">            showMessage = false;</span>
+        }
+<span class="fc" id="L64">    }</span>
+
+	/**
+     * EXTENDED
+	 * Convenience method to be called by the game screen's &lt;code&gt; render()
+	 * &lt;/code&gt; method, to draw the NPC's sprite, and it's dialog using a
+	 * SpriteBatch at the current player coordinates.
+	 * @param batch SpriteBatch used by application to render all sprites.
+	 * @see com.badlogic.gdx.graphics.g2d.SpriteBatch SpriteBatch
+	 * @see com.badlogic.gdx.Screen#render Screen.render().
+	 */
+	public void render(SpriteBatch batch){
+<span class="nc" id="L76">		batch.draw(texture, position.x, position.y);</span>
+<span class="nc bnc" id="L77" title="All 4 branches missed.">		if (showMessage &amp;&amp; currentLine != null){</span>
+<span class="nc" id="L78">		    font.draw(</span>
+			batch,
+			currentLine,
+<span class="nc" id="L81">			position.x - 100, position.y + texture.getHeight() + 40);</span>
+		}
+<span class="nc" id="L83">	}</span>
+
+	/**
+	 * Convenience method to be called by application to dispose of textures
+	 * of NPC's sprites and dialog when the application's dispose method is called.
+	 * @see com.badlogic.gdx.Screen#dispose Screen.dispose().
+	 */
+	public void dispose(){
+<span class="fc" id="L91">		texture.dispose();</span>
+<span class="fc" id="L92">		font.dispose();</span>
+<span class="fc" id="L93">	}</span>
+
+    protected boolean isInteractKeyPressed() {
+<span class="nc" id="L96">        return Gdx.input.isKeyJustPressed(Input.Keys.E);</span>
+    }
+
+    protected boolean isPlayerInRange(Player player) {
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        return player.getPosition().dst(position) &lt; 50f;</span>
+    }
+
+    protected boolean isPlayerOutOfRange(Player player) {
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        return player.getPosition().dst(position) &gt; 60f;</span>
+    }
+
+    protected String chooseDialogLine() {
+<span class="nc" id="L108">        return lines[random.nextInt(lines.length)];</span>
+    }
+
+
+   
+	/**
+	 * Get the NPC's position in world.
+	 * @return The players x-by-y coordinates as a 2D vector.
+	 */
+	public Vector2 getPosition() {
+<span class="fc" id="L118">		return position;</span>
+	}
+
+	/**
+	 * Get NPC's collision box.
+	 * @return Rectangle bounds of NPC.
+	 */
+	public Rectangle getBounds() {
+<span class="fc" id="L126">		return bounds;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
