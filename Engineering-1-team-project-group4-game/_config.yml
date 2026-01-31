@@ -23,6 +23,9 @@ email: dqm509@york.ac.uk
 description: >- # this means to ignore newlines until "baseurl:"
   A 2D game about escaping a maze University Of York, while evading the dean and collecting sweet treats. Created with LibGDX and Java.
 github_username: AbdulFofanah
+baseurl: "/Engineering-1-team-project-group4-game"
+url: "https://abdulfofanah.github.io"
+
 
 # Build settings
 remote_theme: pages-themes/cayman@v0.2.0
@@ -33,9 +36,12 @@ plugins:
 show_downloads: true
 github:
   is_project_page: true
-  game_repo : https://github.com/AbdulFofanah/Engineering-1-team-project-group4-game
-  jar_url : Engineering-1-team-project-group4-game/assets/Escape_the_Uni_Assessment_2_THADJAM.jar
-
+  repository_name: Engineering-1-team-project-group4-game
+  repository_url: https://github.com/AbdulFofanah/Engineering-1-team-project-group4-game
+  owner_name: Abdul Fofanah
+  owner_url: https://github.com/AbdulFofanah
+  jar_url: /assets/Escape_the_Uni_Assessment.jar
+  game_repo: https://github.com/AbdulFofanah/Engineering-1-team-project-group4-game
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to

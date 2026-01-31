@@ -9,7 +9,7 @@ Screenshots as the timeline updates during the life cycle of the projects.
 #Timeline Updates
 
 ## Update 1
-![Timline Update 1](/assets/Timeline 1.png)
+![Timline Update 1](assets/Timeline 1.png)
 
 ## Update 2
 ![Timline Update 2](/assets/Timeline 2.png)
