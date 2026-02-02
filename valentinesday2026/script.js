@@ -5,6 +5,9 @@ const video = document.getElementById('valVideo');
 const closeBtn = document.getElementById('closeBtn');
 const card = document.querySelector('.card');
 
+const musicBtn = document.getElementById('musicBtn');
+const bgMusic = document.getElementById('bgMusic');
+
 /*
    Helper utilities
     */
@@ -77,7 +80,30 @@ noBtn.addEventListener('pointerenter', moveNoButton);
 noBtn.addEventListener('touchstart', moveNoButton, { passive: false });
 
 /*
-   2. Heart rain effect
+   2. Background music toggle
+    */
+
+let musicPlaying = false;
+
+if (musicBtn && bgMusic) {
+    musicBtn.addEventListener('click', () => {
+        if (!musicPlaying) {
+            bgMusic.volume = 0.6;
+            bgMusic.loop = true;
+
+            bgMusic.play().catch(() => {});
+            musicBtn.textContent = '⏸ Pause music';
+            musicPlaying = true;
+        } else {
+            bgMusic.pause();
+            musicBtn.textContent = '🎵 Play music';
+            musicPlaying = false;
+        }
+    });
+}
+
+/*
+   3. Heart rain effect
     */
 
 function createHeart() {
@@ -96,14 +122,22 @@ function createHeart() {
 }
 
 /*
-   3. "Yes" button behaviour
+   4. "Yes" button behaviour
     */
 
 yesBtn.addEventListener('click', () => {
     overlay.style.display = 'flex';
     noBtn.style.display = 'none';
 
-    /* Autoplay if permitted by browser */
+    /* Stop background music after "Yes" */
+    if (bgMusic && musicBtn) {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+        musicBtn.textContent = '🎵 Play music';
+        musicPlaying = false;
+    }
+
+    /* Autoplay video if permitted by browser */
     video.play().catch(() => {});
 
     /* Timed heart animation burst */
@@ -112,7 +146,7 @@ yesBtn.addEventListener('click', () => {
 });
 
 /*
-   4. Modal lifecycle controls
+   5. Modal lifecycle controls
     */
 
 function closeModal() {
@@ -137,7 +171,7 @@ document.addEventListener('keydown', (e) => {
 
 /*
    Initialisation + layout safety
-    */
+   */
 
 window.addEventListener('load', moveNoButton);
 

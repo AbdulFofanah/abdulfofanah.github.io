@@ -6,7 +6,7 @@
 
 /*
    Base layout
-    */
+*/
 
 body {
     background-color: var(--bg-pink);
@@ -22,7 +22,7 @@ body {
 
 /*
    Main card
-    */
+*/
 
 .card {
     text-align: center;
@@ -51,7 +51,7 @@ h1 {
 
 /*
    Buttons
-    */
+*/
 
 .btn-group {
     display: flex;
@@ -93,8 +93,26 @@ button {
 }
 
 /*
+   Music toggle button
+*/
+
+.music-btn {
+    margin-top: 14px;
+    background: transparent;
+    color: #d63384;
+    font-size: 0.95rem;
+    border: 2px solid rgba(214, 51, 132, 0.3);
+    padding: 8px 16px;
+    border-radius: 999px;
+}
+
+.music-btn:active {
+    transform: scale(0.95);
+}
+
+/*
    Overlay + modal
-    */
+*/
 
 #overlay {
     display: none;
@@ -127,7 +145,7 @@ video {
 
 /*
    Portrait video handling (iPhone 9:16)
-   */
+*/
 
 .video-wrapper {
     width: 100%;
@@ -153,7 +171,7 @@ video {
 
 /*
    Heart rain animation
-   */
+*/
 
 .heart {
     position: fixed;
