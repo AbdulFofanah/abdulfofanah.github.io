@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Be My Valentine? ❤️</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Main card -->
+<div class="card">
+    <img
+            src="Bear-Hearts.gif"
+            alt="Valentine's Day Bear">
+
+    <h1>Lauren Morenike Akinluyi, Will you be my Valentine?</h1>
+
+    <!-- Primary actions -->
+    <div class="btn-group">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn" aria-label="No">No</button>
+    </div>
+</div>
+
+<!-- Overlay + modal -->
+<div id="overlay">
+    <div class="modal">
+        <h2 style="color: #d63384; margin-top: 0;">I'm happy to hear that! ❤️</h2>
+
+        <p>
+            My one request: we recreate this video together<br><br>
+            It would be my honour to see you on the 14th.
+        </p>
+
+        <!-- Video (place MP4 in same folder as index.html) -->
+        <div class="video-wrapper">
+            <video id="valVideo" controls playsinline>
+                <source src="dance-video-2025.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+
+        <button class="close-btn" id="closeBtn">Close</button>
+    </div>
+</div>
+
+<!-- Logic -->
+<script src="script.js"></script>
+</body>
+</html>
